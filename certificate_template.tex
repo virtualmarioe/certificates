@@ -1,0 +1,167 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{fancyhdr}
+\usepackage{datetime}
+\usepackage{etoolbox}
+
+% Page setup
+\geometry{margin=1in}
+\pagestyle{empty}
+
+% Colors
+\definecolor{primary}{RGB}{25, 118, 210}
+\definecolor{secondary}{RGB}{245, 245, 245}
+\definecolor{accent}{RGB}{255, 193, 7}
+
+% Font setup (using system fonts)
+\setmainfont{Times New Roman}
+\newfontfamily\titlefont{Times New Roman}
+\newfontfamily\signaturefont{Times New Roman}
+
+% Certificate dimensions
+\newlength{\certwidth}
+\newlength{\certheight}
+\setlength{\certwidth}{8.5in}
+\setlength{\certheight}{11in}
+
+% Command to generate certificate for a single person
+\newcommand{\generatecertificate}[4]{%
+    \begin{center}
+        \begin{tikzpicture}[remember picture,overlay]
+            % Background border
+            \draw[line width=3pt, color=primary] 
+                (current page.north west) rectangle (current page.south east);
+            
+            % Inner border
+            \draw[line width=1pt, color=primary!50] 
+                ([xshift=0.5in,yshift=-0.5in]current page.north west) 
+                rectangle 
+                ([xshift=-0.5in,yshift=0.5in]current page.south east);
+            
+            % Decorative corner elements
+            \draw[line width=2pt, color=accent] 
+                ([xshift=1in,yshift=-1in]current page.north west) -- 
+                ([xshift=2in,yshift=-1in]current page.north west);
+            \draw[line width=2pt, color=accent] 
+                ([xshift=1in,yshift=-1in]current page.north west) -- 
+                ([xshift=1in,yshift=-2in]current page.north west);
+            
+            \draw[line width=2pt, color=accent] 
+                ([xshift=-1in,yshift=-1in]current page.north east) -- 
+                ([xshift=-2in,yshift=-1in]current page.north east);
+            \draw[line width=2pt, color=accent] 
+                ([xshift=-1in,yshift=-1in]current page.north east) -- 
+                ([xshift=-1in,yshift=-2in]current page.north east);
+            
+            \draw[line width=2pt, color=accent] 
+                ([xshift=1in,yshift=1in]current page.south west) -- 
+                ([xshift=2in,yshift=1in]current page.south west);
+            \draw[line width=2pt, color=accent] 
+                ([xshift=1in,yshift=1in]current page.south west) -- 
+                ([xshift=1in,yshift=2in]current page.south west);
+            
+            \draw[line width=2pt, color=accent] 
+                ([xshift=-1in,yshift=1in]current page.south east) -- 
+                ([xshift=-2in,yshift=1in]current page.south east);
+            \draw[line width=2pt, color=accent] 
+                ([xshift=-1in,yshift=1in]current page.south east) -- 
+                ([xshift=-1in,yshift=2in]current page.south east);
+        \end{tikzpicture}
+        
+        % Certificate content
+        \vspace*{2cm}
+        
+        % Header
+        \begin{center}
+            \titlefont\Huge\textbf{CERTIFICATE OF COMPLETION}
+        \end{center}
+        
+        \vspace{1cm}
+        
+        % Subtitle
+        \begin{center}
+            \Large\textcolor{primary}{High Performance Computing (HPC)}\\
+            \Large\textcolor{primary}{General Beginner Course}
+        \end{center}
+        
+        \vspace{2cm}
+        
+        % Main text
+        \begin{center}
+            \Large This is to certify that
+        \end{center}
+        
+        \vspace{0.5cm}
+        
+        % Recipient name
+        \begin{center}
+            \titlefont\Huge\textbf{#1}
+        \end{center}
+        
+        \vspace{0.5cm}
+        
+        % Certificate text
+        \begin{center}
+            \Large has successfully completed the requirements for the\\
+            \Large\textbf{High Performance Computing General Beginner Course}
+        \end{center}
+        
+        \vspace{1cm}
+        
+        % Course details
+        \begin{center}
+            \Large Course Duration: 40 hours\\
+            \Large Completion Date: #2\\
+            \Large Certificate ID: #3
+        \end{center}
+        
+        \vspace{2cm}
+        
+        % Signatures section
+        \begin{center}
+            \begin{tabular}{ccc}
+                \rule{3cm}{0.5pt} & \hspace{2cm} & \rule{3cm}{0.5pt} \\
+                Course Instructor & & Program Director \\
+                \vspace{0.5cm} & & \vspace{0.5cm} \\
+                \rule{3cm}{0.5pt} & \hspace{2cm} & \rule{3cm}{0.5pt} \\
+                Academic Coordinator & & Date: #4
+            \end{tabular}
+        \end{center}
+        
+        \vspace{1cm}
+        
+        % Footer
+        \begin{center}
+            \small\textcolor{gray}{This certificate is issued electronically and is valid without signature}
+        \end{center}
+        
+        \vspace{0.5cm}
+        
+        % Certificate number
+        \begin{center}
+            \small\textcolor{gray}{Certificate Number: #3}
+        \end{center}
+    \end{center}
+    
+    \newpage
+}
+
+% Main document
+\begin{document}
+
+% Generate certificates for multiple people
+% Format: \generatecertificate{Name}{Completion Date}{Certificate ID}{Issue Date}
+
+\generatecertificate{Mario Eduardo Archila Meléndez}{June 17, 2025}{HPC-2025-001}{June 17, 2025}
+
+% Add more certificates here as needed
+% \generatecertificate{John Doe}{June 18, 2025}{HPC-2025-002}{June 18, 2025}
+% \generatecertificate{Jane Smith}{June 19, 2025}{HPC-2025-003}{June 19, 2025}
+
+\end{document} 
