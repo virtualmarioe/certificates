@@ -1,4 +1,4 @@
-% Certificate Template for BPCN (with placeholders)
+% Certificate Template Example for BPCN (with placeholders)
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -26,7 +26,7 @@
 
 % Set background image using eso-pic (only if file exists)
 \IfFileExists{certificate_base_page.png}{
-  \AddToShipoutPictureBG*{
+  \AddToShipoutPictureBG{
     \put(-0.1cm,0){\includegraphics[width=\paperwidth,height=\paperheight]{certificate_base_page.png}}
   }
 }{
@@ -76,7 +76,6 @@
         \parbox{12.4cm}{\centering\color{grayText}\fontsize{10}{12}\selectfont (This document is digitally signed.)}
     \end{tabularx}
     \vspace{0.7cm}
-    %\parbox{13cm}{\raggedright\color{grayText}\fontsize{10}{12}\selectfont (This document is digitally signed.)}
 \end{minipage}
 
 \end{document} 

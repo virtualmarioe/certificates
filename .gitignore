@@ -1,8 +1,32 @@
-# Exclude names.csv file (contains personal data)
+# Exclude sensitive data files
 names.csv
+# Allow sample CSV file
+!sample_names.csv
 
-# Exclude all PDF files
+# Exclude branding and image files
+certificate_base_page.png
+certificate_base_page.ai
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ai
+*.eps
+*.svg
+
+# Exclude all PDF files (contain participant information)
 *.pdf
+pdfs/
+
+# Exclude LaTeX files with participant information
+certificate_*.tex
+certificates.tex
+debug_certificate.tex
+debug_certificate.pdf
+debug_certificate.aux
+debug_certificate.log
+# Allow example template
+!certificate_template_example.tex
 
 # Exclude LaTeX auxiliary files
 *.aux

@@ -1,91 +1,145 @@
 # Certificate Generator
 
-A Python script to generate professional LaTeX certificates for multiple people from a CSV file.
+A Python-based LaTeX certificate generation system for creating professional certificates with custom branding and batch processing capabilities.
 
 ## Features
 
-- Generate individual PDF certificates for each person
-- Create a combined PDF with all certificates
-- Professional certificate design with decorative borders
-- Support for custom completion dates
-- Automatic certificate ID generation
-- Clean LaTeX output
+- **Batch Processing**: Generate certificates for multiple participants from CSV files
+- **Professional Branding**: Custom background images and university branding
+- **Flexible Templates**: Easy-to-customize LaTeX templates with placeholders
+- **Multiple Output Formats**: Individual PDFs and combined multi-page PDFs
+- **Error Handling**: Robust handling of missing files and parsing errors
 
 ## Requirements
 
 - Python 3.6+
-- XeLaTeX (for PDF compilation)
-- Required Python packages: `csv`, `datetime`, `os`, `subprocess`, `shutil`
+- XeLaTeX (TeX Live or MiKTeX distribution)
+- Required Python packages: `datetime`, `csv`, `subprocess`, `os`, `shutil`
 
 ## Installation
 
-1. Clone this repository
-2. Install a LaTeX distribution (TeX Live, MiKTeX, or MacTeX)
-3. Ensure XeLaTeX is available in your PATH
+1. Clone this repository:
+```bash
+git clone <repository-url>
+cd certificates
+```
+
+2. Run the setup script to check requirements:
+```bash
+python3 setup.py
+```
+
+3. Install a LaTeX distribution if needed:
+   - **macOS**: Install MacTeX
+   - **Windows**: Install MiKTeX
+   - **Linux**: Install TeX Live
+
+## Setup
+
+1. **Prepare your data**: Create a CSV file named `names.csv` with the following columns:
+   ```
+   Lastname,Name,completion_date
+   Doe,John,2025-01-15
+   Smith,Jane,2025-01-20
+   ```
+
+2. **Add your branding assets**:
+   - Place your background image as `certificate_base_page.png`
+   - Add any logo files referenced in the template
+
+3. **Customize the template** (optional):
+   - Edit `certificate_template.tex` to match your institution's branding
+   - Modify colors, fonts, and layout as needed
 
 ## Usage
 
-### 1. Prepare your data
+### Basic Usage
 
-Create a `names.csv` file with the following columns:
-- `Lastname`: Last name of the person
-- `Name`: First name of the person  
-- `completion_date`: Completion date in YYYY-MM-DD format (optional)
-
-Example:
-```csv
-Lastname,Name,completion_date
-Doe,John,2025-01-15
-Smith,Jane,2025-01-20
-```
-
-### 2. Generate certificates
-
-Run the script:
+Run the certificate generator:
 ```bash
-python generate_certificates.py
+python3 generate_certificates.py
 ```
 
 This will:
-- Generate individual PDF certificates in the `pdfs/` folder
+- Generate individual PDF certificates for each person in `names.csv`
 - Create a combined PDF with all certificates
-- Generate a LaTeX file (`certificates.tex`) for manual compilation
+- Save all files to the `pdfs/` directory
 
-### 3. Output files
+### Customization
 
-- `pdfs/`: Directory containing individual PDF certificates
-- `pdfs/all_certificates.pdf`: Combined PDF with all certificates
-- `certificates.tex`: LaTeX source file
+You can modify the certificate content by editing the variables in `generate_certificates.py`:
+
+```python
+workshop_title = "Your Workshop Title"
+tutors = "Instructor Name"
+duration = "Duration"
+contents = [
+    "Content item 1",
+    "Content item 2",
+    # Add more content items
+]
+date = "2025-01-15"
+date_range = "2025-01-01 to 2025-01-15"
+signatory1 = "Instructor Name"
+signatory2 = "Chair Name"
+location = "Location"
+```
 
 ## File Structure
 
 ```
-certificate/
-├── generate_certificates.py    # Main script
-├── certificate_template.tex    # LaTeX template
-├── certificates.tex           # Generated LaTeX file
-├── names.csv                  # Input data (ignored by git)
-├── pdfs/                      # Output directory
-├── .gitignore                 # Git ignore rules
-└── README.md                  # This file
+certificates/
+├── generate_certificates.py      # Main generation script
+├── certificate_template.tex      # LaTeX template
+├── sample_names.csv             # Example CSV file
+├── names.csv                    # Your participant data (not in repo)
+├── certificate_base_page.png    # Background image (not in repo)
+├── pdfs/                        # Generated PDFs (not in repo)
+└── README.md                    # This file
 ```
 
-## Git Ignore Rules
+## Template Customization
 
-The following files are excluded from version control:
-- `names.csv` (contains personal data)
-- `*.pdf` (generated certificates)
-- LaTeX auxiliary files
-- Temporary and cache files
+The LaTeX template (`certificate_template.tex`) uses placeholders that are replaced with actual data:
 
-## Customization
+- `{{NAME}}` - Participant's full name
+- `{{WORKSHOP}}` - Workshop/course title
+- `{{DATE}}` - Completion date
+- `{{DATE_RANGE}}` - Course date range
+- `{{TUTORS}}` - Instructor names
+- `{{DURATION}}` - Course duration
+- `{{CONTENTS}}` - Course content items
+- `{{SIGNATORY1}}` - First signatory
+- `{{SIGNATORY2}}` - Second signatory
 
-You can modify the certificate design by editing the LaTeX template in the `CertificateGenerator` class. The template includes:
-- Professional border design
-- Custom colors and fonts
-- Signature sections
-- Certificate numbering
+## Privacy and Security
+
+This repository is configured to exclude sensitive files:
+
+- **CSV files** containing participant data
+- **Generated PDFs** with participant information
+- **LaTeX files** with participant names
+- **Background images** with institutional branding
+
+The `.gitignore` file ensures these files are not accidentally committed to version control.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **XeLaTeX not found**: Install a LaTeX distribution
+2. **Font issues**: Ensure Arial font is available or change to a system font
+3. **Background image missing**: Place your background image as `certificate_base_page.png`
+4. **CSV parsing errors**: Check that your CSV file has the correct column headers
+
+### Debug Mode
+
+For testing, you can uncomment the debug section in `generate_certificates.py` to generate a single test certificate.
 
 ## License
 
-This project is open source and available under the MIT License. 
+[Add your license information here]
+
+## Contributing
+
+[Add contribution guidelines if desired] 

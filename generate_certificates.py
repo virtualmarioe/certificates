@@ -6,417 +6,295 @@ Generates LaTeX certificates for multiple people from a list of names.
 
 import os
 import datetime
-from typing import List, Dict
+from typing import List
 
 class CertificateGenerator:
-    def __init__(self):
-        self.latex_header = r"""\documentclass[12pt,a4paper]{article}
+    def __init__(self, template_file: str = "certificate_template.tex"):
+        with open(template_file, 'r', encoding='utf-8') as f:
+            self.template = f.read()
+
+    def fill_template(self, fields: dict) -> str:
+        latex = self.template
+        for key, value in fields.items():
+            latex = latex.replace(f"{{{{{key}}}}}", value)
+        return latex
+
+    def generate_certificates_from_list(self, names: list, output_file: str = "certificates.tex",
+                                        workshop_title: str = "Workshop Title",
+                                        tutors: str = "Instructor",
+                                        duration: str = "Duration_hours",
+                                        contents: list = None,
+                                        date: str = None,
+                                        date_range: str = None,
+                                        signatory1: str = "Instructor",
+                                        signatory2: str = "Chair",
+                                        location: str = "Location") -> str:
+        if contents is None:
+            contents = [
+                "Content_item 1",
+                "Content_item 2",
+                "Content_item 3",
+                "Content_item 4"
+            ]
+        if date is None:
+            date = datetime.date.today().strftime("%Y-%m-%d")
+        if date_range is None:
+            date_range = date
+        
+        # Create a proper combined LaTeX document
+        combined_content = []
+        combined_content.append(r"""% Combined Certificates Template for BPCN
+\documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{geometry}
-\usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{fontspec}
-\usepackage{fancyhdr}
-\usepackage{datetime}
-\usepackage{etoolbox}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{eso-pic} % Use eso-pic for background image
+\usepackage{tikz}
+\usepackage{setspace}
 
 % Page setup
-\geometry{margin=1in}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=0.5cm}
 \pagestyle{empty}
 
 % Colors
-\definecolor{primary}{RGB}{25, 118, 210}
-\definecolor{secondary}{RGB}{245, 245, 245}
-\definecolor{accent}{RGB}{255, 193, 7}
+\definecolor{darkblue}{RGB}{0,47,93}
+\definecolor{lightblue}{RGB}{101,139,200}
+\definecolor{grayText}{RGB}{136,136,136}
 
-% Font setup (using system fonts)
-\setmainfont{Times New Roman}
-\newfontfamily\titlefont{Times New Roman}
-\newfontfamily\signaturefont{Times New Roman}
+% Fonts
+\setmainfont{Arial}
 
-% Certificate dimensions
-\newlength{\certwidth}
-\newlength{\certheight}
-\setlength{\certwidth}{8.5in}
-\setlength{\certheight}{11in}
-
-% Command to generate certificate for a single person
-\newcommand{\generatecertificate}[4]{%
-    \begin{center}
-        \begin{tikzpicture}[remember picture,overlay]
-            % Background border
-            \draw[line width=3pt, color=primary] 
-                (current page.north west) rectangle (current page.south east);
-            
-            % Inner border
-            \draw[line width=1pt, color=primary!50] 
-                ([xshift=0.5in,yshift=-0.5in]current page.north west) 
-                rectangle 
-                ([xshift=-0.5in,yshift=0.5in]current page.south east);
-            
-            % Decorative corner elements
-            \draw[line width=2pt, color=accent] 
-                ([xshift=1in,yshift=-1in]current page.north west) -- 
-                ([xshift=2in,yshift=-1in]current page.north west);
-            \draw[line width=2pt, color=accent] 
-                ([xshift=1in,yshift=-1in]current page.north west) -- 
-                ([xshift=1in,yshift=-2in]current page.north west);
-            
-            \draw[line width=2pt, color=accent] 
-                ([xshift=-1in,yshift=-1in]current page.north east) -- 
-                ([xshift=-2in,yshift=-1in]current page.north east);
-            \draw[line width=2pt, color=accent] 
-                ([xshift=-1in,yshift=-1in]current page.north east) -- 
-                ([xshift=-1in,yshift=-2in]current page.north east);
-            
-            \draw[line width=2pt, color=accent] 
-                ([xshift=1in,yshift=1in]current page.south west) -- 
-                ([xshift=2in,yshift=1in]current page.south west);
-            \draw[line width=2pt, color=accent] 
-                ([xshift=1in,yshift=1in]current page.south west) -- 
-                ([xshift=1in,yshift=2in]current page.south west);
-            
-            \draw[line width=2pt, color=accent] 
-                ([xshift=-1in,yshift=1in]current page.south east) -- 
-                ([xshift=-2in,yshift=1in]current page.south east);
-            \draw[line width=2pt, color=accent] 
-                ([xshift=-1in,yshift=1in]current page.south east) -- 
-                ([xshift=-1in,yshift=2in]current page.south east);
-        \end{tikzpicture}
-        
-        % Certificate content
-        \vspace*{2cm}
-        
-        % Header
-        \begin{center}
-            \titlefont\Huge\textbf{CERTIFICATE OF COMPLETION}
-        \end{center}
-        
-        \vspace{1cm}
-        
-        % Subtitle
-        \begin{center}
-            \Large\textcolor{primary}{High Performance Computing (HPC)}\\
-            \Large\textcolor{primary}{General Beginner Course}
-        \end{center}
-        
-        \vspace{2cm}
-        
-        % Main text
-        \begin{center}
-            \Large This is to certify that
-        \end{center}
-        
-        \vspace{0.5cm}
-        
-        % Recipient name
-        \begin{center}
-            \titlefont\Huge\textbf{#1}
-        \end{center}
-        
-        \vspace{0.5cm}
-        
-        % Certificate text
-        \begin{center}
-            \Large has successfully completed the requirements for the\\
-            \Large\textbf{High Performance Computing General Beginner Course}
-        \end{center}
-        
-        \vspace{1cm}
-        
-        % Course details
-        \begin{center}
-            \Large Course Duration: 40 hours\\
-            \Large Completion Date: #2\\
-            \Large Certificate ID: #3
-        \end{center}
-        
-        \vspace{2cm}
-        
-        % Signatures section
-        \begin{center}
-            \begin{tabular}{ccc}
-                \rule{3cm}{0.5pt} & \hspace{2cm} & \rule{3cm}{0.5pt} \\
-                Course Instructor & & Program Director \\
-                \vspace{0.5cm} & & \vspace{0.5cm} \\
-                \rule{3cm}{0.5pt} & \hspace{2cm} & \rule{3cm}{0.5pt} \\
-                Academic Coordinator & & Date: #4
-            \end{tabular}
-        \end{center}
-        
-        \vspace{1cm}
-        
-        % Footer
-        \begin{center}
-            \small\textcolor{gray}{This certificate is issued electronically and is valid without signature}
-        \end{center}
-        
-        \vspace{0.5cm}
-        
-        % Certificate number
-        \begin{center}
-            \small\textcolor{gray}{Certificate Number: #3}
-        \end{center}
-    \end{center}
-    
-    \newpage
+% Set background image using eso-pic (only if file exists)
+\IfFileExists{certificate_base_page.png}{
+  \AddToShipoutPictureBG{
+    \put(-0.1cm,0){\includegraphics[width=\paperwidth,height=\paperheight]{certificate_base_page.png}}
+  }
+}{
+  % No background image - blank page
 }
 
-% Main document
 \begin{document}
-"""
-
-        self.latex_footer = r"""
-\end{document}"""
-
-    def generate_certificate_id(self, index: int, year: str = None) -> str:
-        """Generate a unique certificate ID."""
-        if year is None:
-            year = datetime.datetime.now().strftime("%Y")
-        return f"HPC-{year}-{index:03d}"
-
-    def format_date(self, date_obj: datetime.date) -> str:
-        """Format date in a readable format."""
-        return date_obj.strftime("%B %d, %Y")
-
-    def generate_latex_for_person(self, name: str, completion_date: datetime.date, 
-                                certificate_id: str, issue_date: datetime.date = None) -> str:
-        """Generate LaTeX code for a single certificate."""
-        if issue_date is None:
-            issue_date = completion_date
-            
-        formatted_completion = self.format_date(completion_date)
-        formatted_issue = self.format_date(issue_date)
+""")
         
-        return f"\\generatecertificate{{{name}}}{{{formatted_completion}}}{{{certificate_id}}}{{{formatted_issue}}}"
-
-    def generate_certificates_from_list(self, names: List[str], 
-                                      completion_date: datetime.date = None,
-                                      output_file: str = "certificates.tex") -> str:
-        """
-        Generate LaTeX certificates for a list of names.
-        
-        Args:
-            names: List of full names
-            completion_date: Date of completion (defaults to today)
-            output_file: Output LaTeX file name
+        for name in names:
+            fields = {
+                "NAME": name,
+                "SUBTITLE": "",
+                "WORKSHOP": workshop_title,
+                "DATE": date,
+                "DATE_RANGE": date_range,
+                "TUTORS": tutors,
+                "DURATION": duration,
+                "CONTENTS": "\n        ".join([f"\\item {item}" for item in contents]),
+                "SIGNATORY1": signatory1,
+                "SIGNATORY2": signatory2,
+            }
             
-        Returns:
-            Path to the generated LaTeX file
-        """
-        if completion_date is None:
-            completion_date = datetime.date.today()
+            # Get the template content and extract just the document body
+            template_content = self.fill_template(fields)
             
-        # Generate LaTeX content
-        latex_content = self.latex_header
-        
-        for i, name in enumerate(names, 1):
-            certificate_id = self.generate_certificate_id(i)
-            certificate_latex = self.generate_latex_for_person(
-                name, completion_date, certificate_id
-            )
-            latex_content += f"\n{certificate_latex}\n"
+            # Extract the content between \begin{document} and \end{document}
+            start_marker = r"\begin{document}"
+            end_marker = r"\end{document}"
+            start_pos = template_content.find(start_marker)
+            end_pos = template_content.find(end_marker)
             
-        latex_content += self.latex_footer
+            if start_pos != -1 and end_pos != -1:
+                # Extract the document body (content between \begin{document} and \end{document})
+                document_body = template_content[start_pos + len(start_marker):end_pos].strip()
+                combined_content.append(document_body)
+                # Add a page break between certificates
+                combined_content.append(r"\newpage")
         
-        # Write to file
+        # Close the document
+        combined_content.append(r"\end{document}")
+        
+        # Write the combined document
         with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(latex_content)
-            
+            f.write("\n\n".join(combined_content))
         return output_file
 
-    def generate_certificates_from_csv(self, csv_file: str, 
-                                     lastname_column: str = "Lastname",
-                                     name_column: str = "Name",
-                                     completion_date_column: str = "completion_date",
-                                     output_file: str = "certificates.tex") -> str:
-        """
-        Generate certificates from a CSV file.
-        
-        Args:
-            csv_file: Path to CSV file
-            lastname_column: Column name containing last names
-            name_column: Column name containing first names
-            completion_date_column: Column name containing completion dates
-            output_file: Output LaTeX file name
-            
-        Returns:
-            Path to the generated LaTeX file
-        """
+    def generate_certificates_from_csv(self, csv_file: str, output_file: str = "certificates.tex", **kwargs) -> str:
         import csv
-        
         names = []
-        completion_dates = []
-        
-        with open(csv_file, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f, skipinitialspace=True)
+        with open(csv_file, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
             for row in reader:
-                lastname = row[lastname_column].strip()
-                firstname = row[name_column].strip()
-                full_name = f"{lastname} {firstname}"
-                names.append(full_name)
-                if completion_date_column and completion_date_column in row:
-                    try:
-                        date_obj = datetime.datetime.strptime(
-                            row[completion_date_column].strip(), "%Y-%m-%d"
-                        ).date()
-                        completion_dates.append(date_obj)
-                    except ValueError:
-                        completion_dates.append(datetime.date.today())
+                # Combine Lastname and Name columns if present, with proper whitespace handling
+                if 'Lastname' in row and 'Name' in row:
+                    lastname = row['Lastname'].strip()
+                    firstname = row['Name'].strip()
+                    full_name = f"{lastname} {firstname}".strip()
+                elif 'Lastname' in row and ' Name' in row:  # Handle space in column name
+                    lastname = row['Lastname'].strip()
+                    firstname = row[' Name'].strip()
+                    full_name = f"{lastname} {firstname}".strip()
                 else:
-                    completion_dates.append(datetime.date.today())
-        
-        # Generate LaTeX content
-        latex_content = self.latex_header
-        
-        for i, (name, completion_date) in enumerate(zip(names, completion_dates), 1):
-            certificate_id = self.generate_certificate_id(i)
-            certificate_latex = self.generate_latex_for_person(
-                name, completion_date, certificate_id
-            )
-            latex_content += f"\n{certificate_latex}\n"
-            
-        latex_content += self.latex_footer
-        
-        # Write to file
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(latex_content)
-            
-        return output_file
+                    full_name = row.get('Name', '').strip()
+                names.append(full_name)
+        return self.generate_certificates_from_list(names, output_file=output_file, **kwargs)
 
     def generate_individual_certificates_from_csv(self, csv_file: str,
                                                 lastname_column: str = "Lastname",
                                                 name_column: str = "Name",
                                                 completion_date_column: str = "completion_date",
-                                                output_dir: str = "pdfs") -> list:
-        """
-        Generate individual PDF certificates for each person from a CSV file.
-        
-        Args:
-            csv_file: Path to CSV file
-            lastname_column: Column name containing last names
-            name_column: Column name containing first names
-            completion_date_column: Column name containing completion dates
-            output_dir: Directory to save individual PDFs
-            
-        Returns:
-            List of paths to generated PDF files
-        """
+                                                output_dir: str = "pdfs",
+                                                workshop_title: str = "Workshop_Title",
+                                                tutors: str = "Instructor",
+                                                duration: str = "Duration_hours",
+                                                contents: list = None,
+                                                date: str = None,
+                                                date_range: str = None,
+                                                signatory1: str = "Instructor",
+                                                signatory2: str = "Chair",
+                                                location: str = "Jena") -> list:
         import csv
         import subprocess
         import shutil
-        
-        # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
-        
         names = []
         completion_dates = []
-        
         with open(csv_file, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f, skipinitialspace=True)
             for row in reader:
-                lastname = row[lastname_column].strip()
-                firstname = row[name_column].strip()
-                full_name = f"{lastname} {firstname}"
+                lastname = row.get(lastname_column, '').strip()
+                firstname = row.get(name_column, '').strip()
+                # Handle case where column name has a space
+                if not firstname and ' Name' in row:
+                    firstname = row[' Name'].strip()
+                full_name = f"{lastname} {firstname}".strip()
                 names.append(full_name)
-                if completion_date_column and completion_date_column in row:
+                if completion_date_column and completion_date_column in row and row[completion_date_column].strip():
                     try:
                         date_obj = datetime.datetime.strptime(
                             row[completion_date_column].strip(), "%Y-%m-%d"
                         ).date()
-                        completion_dates.append(date_obj)
+                        completion_dates.append(date_obj.strftime("%Y-%m-%d"))
                     except ValueError:
-                        completion_dates.append(datetime.date.today())
+                        completion_dates.append(datetime.date.today().strftime("%Y-%m-%d"))
                 else:
-                    completion_dates.append(datetime.date.today())
-        
+                    completion_dates.append(datetime.date.today().strftime("%Y-%m-%d"))
+        if contents is None:
+            contents = [
+                "Overview of local HPC resources",
+                "Structure of HPC systems",
+                "Usage of a HPC system for numerical intensive applications",
+                "Interactive use"
+            ]
+        if date is None:
+            date = datetime.date.today().strftime("%Y-%m-%d")
+        if date_range is None:
+            date_range = date
         generated_pdfs = []
-        
-        for i, (name, completion_date) in enumerate(zip(names, completion_dates), 1):
-            certificate_id = self.generate_certificate_id(i)
-            
-            # Create individual LaTeX file for this person
-            individual_latex = self.latex_header
-            individual_latex += f"\n{self.generate_latex_for_person(name, completion_date, certificate_id)}\n"
-            individual_latex += self.latex_footer
-            
-            # Create safe filename
+        for i, (name, person_date) in enumerate(zip(names, completion_dates), 1):
+            fields = {
+                "NAME": name,
+                "SUBTITLE": "",
+                "WORKSHOP": workshop_title,
+                "DATE": person_date,
+                "DATE_RANGE": date_range,
+                "TUTORS": tutors,
+                "DURATION": duration,
+                "CONTENTS": "\n        ".join([f"\\item {item}" for item in contents]),
+                "SIGNATORY1": signatory1,
+                "SIGNATORY2": signatory2,
+            }
+            latex_content = self.fill_template(fields)
+            # Ensure each individual certificate is a complete LaTeX document
+            # (No need to add \documentclass, \begin{document}, or \end{document} since the template already includes them)
             safe_name = "".join(c for c in name if c.isalnum() or c in (' ', '-', '_')).rstrip()
             safe_name = safe_name.replace(' ', '_')
             latex_filename = f"certificate_{safe_name}.tex"
             pdf_filename = f"certificate_{safe_name}.pdf"
-            
-            # Write LaTeX file
             with open(latex_filename, 'w', encoding='utf-8') as f:
-                f.write(individual_latex)
-            
-            # Compile to PDF
+                f.write(latex_content)
             try:
                 result = subprocess.run(
                     ["xelatex", "-interaction=nonstopmode", latex_filename],
                     capture_output=True,
                     text=True
                 )
-                
                 if result.returncode == 0 and os.path.exists(pdf_filename):
-                    # Move PDF to output directory
                     pdf_destination = os.path.join(output_dir, pdf_filename)
                     shutil.move(pdf_filename, pdf_destination)
                     generated_pdfs.append(pdf_destination)
-                    
-                    # Clean up auxiliary files
                     for ext in ['.aux', '.log', '.out']:
                         aux_file = f"certificate_{safe_name}{ext}"
                         if os.path.exists(aux_file):
                             os.remove(aux_file)
-                    
                     print(f"Generated: {pdf_destination}")
                 else:
                     print(f"Failed to generate PDF for {name}")
-                    
             except Exception as e:
                 print(f"Error generating PDF for {name}: {e}")
-            
-            # Clean up LaTeX file
-            if os.path.exists(latex_filename):
-                os.remove(latex_filename)
-        
+            # if os.path.exists(latex_filename):
+            #     os.remove(latex_filename)
         return generated_pdfs
 
 
 def main():
-    """Example usage of the CertificateGenerator."""
+    """Generate certificates from CSV file."""
     generator = CertificateGenerator()
+    # Common certificate fields (using the same content as debug mode)
+    workshop_title = "Neuro-AI: Artificial Intelligence Applications in Neuroscience"
+    tutors = "Dr. Mario Archila"
+    duration = "26 h"
+    contents = [
+        "Fundamentals of Neuroscience and Artificial Intelligence (AI)",
+        "Neuroscience concepts for AI and Neuro-AI",
+        "Basic AI methods and algorithms",
+        "Machine Learning, and Deep Neural Networks",
+        "Deep Learning in Neuroscience",
+        "Ethical considerations and biases in AI",
+        "Clinical Applications of Neuro-AI"
+    ]
+    date = "2025-07-17"
+    date_range = "10.04.2025 to 10.07.2025"
+    signatory1 = "Dr. Mario Archila"
+    signatory2 = "Prof. Dr. Gyula Kovács"
+    location = "Jena"
     
     # Check if names.csv exists and generate certificates from it
     csv_file = "names.csv"
     if os.path.exists(csv_file):
         print("Generating certificates from names.csv...")
-        
         # Generate individual certificates for each person
         print("Generating individual certificates...")
         individual_pdfs = generator.generate_individual_certificates_from_csv(
             csv_file,
-            lastname_column="Lastname",
-            name_column="Name",
-            completion_date_column="completion_date",
-            output_dir="pdfs"
+            output_dir="pdfs",
+            workshop_title=workshop_title,
+            tutors=tutors,
+            duration=duration,
+            contents=contents,
+            date=date,
+            date_range=date_range,
+            signatory1=signatory1,
+            signatory2=signatory2,
+            location=location
         )
         print(f"Generated {len(individual_pdfs)} individual certificates in pdfs/ folder")
-        
         # Also generate a combined PDF with all certificates
         print("Generating combined certificate file...")
         output_file = generator.generate_certificates_from_csv(
-            csv_file, 
-            lastname_column="Lastname",
-            name_column="Name",
-            completion_date_column="completion_date",
-            output_file="certificates.tex"
+            csv_file,
+            output_file="certificates.tex",
+            workshop_title=workshop_title,
+            tutors=tutors,
+            duration=duration,
+            contents=contents,
+            date=date,
+            date_range=date_range,
+            signatory1=signatory1,
+            signatory2=signatory2,
+            location=location
         )
         print(f"Generated LaTeX file: {output_file}")
-        
         # Compile to PDF
         print("Compiling combined PDF...")
         try:
@@ -426,17 +304,14 @@ def main():
                 capture_output=True,
                 text=True
             )
-            
             if result.returncode == 0:
                 print("PDF compilation successful!")
-                
                 # Move PDF to pdfs folder
                 if os.path.exists("certificates.pdf"):
                     import shutil
                     pdf_destination = os.path.join("pdfs", "all_certificates.pdf")
                     shutil.move("certificates.pdf", pdf_destination)
                     print(f"Combined PDF saved to: {pdf_destination}")
-                    
                     # Clean up auxiliary files
                     for ext in ['.aux', '.log', '.out']:
                         aux_file = f"certificates{ext}"
@@ -449,14 +324,12 @@ def main():
                 print("PDF compilation failed!")
                 print("Error output:")
                 print(result.stderr)
-                
         except FileNotFoundError:
             print("XeLaTeX not found. Please install a LaTeX distribution (like TeX Live or MiKTeX).")
         except Exception as e:
             print(f"Error during compilation: {e}")
     else:
         print(f"CSV file '{csv_file}' not found. Please create it with 'Lastname', 'Name', and 'completion_date' columns.")
-        
         # Fallback to example list
         names = [
             "Mario Eduardo Archila Meléndez",
@@ -465,11 +338,68 @@ def main():
             "Alice Johnson",
             "Bob Wilson"
         ]
-        
         print("Generating certificates from example list...")
         output_file = generator.generate_certificates_from_list(names)
         print(f"Generated: {output_file}")
 
+    # Debug mode (commented out but preserved)
+    """
+    # Debug single certificate
+    name = "Debug Testuser"
+    workshop_title = "Neuro-AI: Artificial Intelligence Applications in Neuroscience"
+    date_range = "10.04.2025 to 10.07.2025"
+    tutors = "Dr. Mario Archila"
+    duration = "26:00 h"
+    contents = [
+        "Fundamentals of Neuroscience and Artificial Intelligence (AI)",
+        "Neuroscience concepts for AI and Neuro-AI",
+        "Basic AI methods and algorithms",
+        "Machine Learning, and Deep Neural Networks",
+        "Deep Learning in Neuroscience",
+        "Ethical considerations and biases in AI",
+        "Clinical Applications of Neuro-AI"
+    ]
+    date = "2025-07-17"
+    
+    # Signatories
+    signatory1 = "Dr. Mario Archila"
+    signatory2 = "Prof. Dr. Gyula Kovács"
+    location = "Jena"
+    print("Generating debug certificate for one name...")
+    output_file = generator.generate_certificates_from_list(
+        [name],
+        output_file="debug_certificate.tex",
+        workshop_title=workshop_title,
+        tutors=tutors,
+        duration=duration,
+        contents=contents,
+        date=date,
+        date_range=date_range,
+        signatory1=signatory1,
+        signatory2=signatory2,
+        location=location
+    )
+    print(f"Generated LaTeX file: {output_file}")
+    # Compile to PDF
+    print("Compiling debug PDF...")
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["xelatex", "-interaction=nonstopmode", output_file],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0:
+            print("PDF compilation successful!")
+        else:
+            print("PDF compilation failed!")
+            print("Error output:")
+            print(result.stderr)
+    except FileNotFoundError:
+        print("XeLaTeX not found. Please install a LaTeX distribution (like TeX Live or MiKTeX).")
+    except Exception as e:
+        print(f"Error during compilation: {e}")
+    """
 
 if __name__ == "__main__":
     main() 
