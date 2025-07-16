@@ -45,19 +45,21 @@ def create_sample_files():
     if not os.path.exists("sample_names.csv"):
         with open("sample_names.csv", "w") as f:
             f.write("Lastname,Name,completion_date\n")
-            f.write("Doe,John,2025-01-15\n")
-            f.write("Smith,Jane,2025-01-20\n")
-            f.write("Johnson,Bob,2025-01-25\n")
+            f.write("Lincoln,Abraham,1809-02-12\n")
+            f.write("King,Martin Luther,1929-01-15\n")
+            f.write("Mandela,Nelson,1918-07-18\n")            
         print("✅ Created sample_names.csv")
     else:
         print("✅ sample_names.csv already exists")
     
-    # Create pdfs directory if it doesn't exist
-    if not os.path.exists("pdfs"):
-        os.makedirs("pdfs")
-        print("✅ Created pdfs/ directory")
-    else:
-        print("✅ pdfs/ directory already exists")
+    # Create output directories if they don't exist
+    output_dirs = ["output", "output/pdfs", "output/tex"]
+    for dir_path in output_dirs:
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+            print(f"✅ Created {dir_path}/ directory")
+        else:
+            print(f"✅ {dir_path}/ directory already exists")
 
 def print_next_steps():
     """Print instructions for next steps."""

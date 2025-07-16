@@ -143,7 +143,7 @@ class CertificateGenerator:
                                                 lastname_column: str = "Lastname",
                                                 name_column: str = "Name",
                                                 completion_date_column: str = "completion_date",
-                                                output_dir: str = "pdfs",
+                                                output_dir: str = "output/pdfs",
                                                 workshop_title: str = "Workshop_Title",
                                                 tutors: str = "Instructor",
                                                 duration: str = "Duration_hours",
@@ -209,7 +209,12 @@ class CertificateGenerator:
             # (No need to add \documentclass, \begin{document}, or \end{document} since the template already includes them)
             safe_name = "".join(c for c in name if c.isalnum() or c in (' ', '-', '_')).rstrip()
             safe_name = safe_name.replace(' ', '_')
-            latex_filename = f"certificate_{safe_name}.tex"
+            
+            # Create tex directory if it doesn't exist
+            tex_dir = "output/tex"
+            os.makedirs(tex_dir, exist_ok=True)
+            
+            latex_filename = os.path.join(tex_dir, f"certificate_{safe_name}.tex")
             pdf_filename = f"certificate_{safe_name}.pdf"
             with open(latex_filename, 'w', encoding='utf-8') as f:
                 f.write(latex_content)
@@ -217,14 +222,16 @@ class CertificateGenerator:
                 result = subprocess.run(
                     ["xelatex", "-interaction=nonstopmode", latex_filename],
                     capture_output=True,
-                    text=True
+                    text=True,
+                    cwd=tex_dir
                 )
-                if result.returncode == 0 and os.path.exists(pdf_filename):
+                if result.returncode == 0 and os.path.exists(os.path.join(tex_dir, pdf_filename)):
+                    pdf_source = os.path.join(tex_dir, pdf_filename)
                     pdf_destination = os.path.join(output_dir, pdf_filename)
-                    shutil.move(pdf_filename, pdf_destination)
+                    shutil.move(pdf_source, pdf_destination)
                     generated_pdfs.append(pdf_destination)
                     for ext in ['.aux', '.log', '.out']:
-                        aux_file = f"certificate_{safe_name}{ext}"
+                        aux_file = os.path.join(tex_dir, f"certificate_{safe_name}{ext}")
                         if os.path.exists(aux_file):
                             os.remove(aux_file)
                     print(f"Generated: {pdf_destination}")
@@ -232,8 +239,7 @@ class CertificateGenerator:
                     print(f"Failed to generate PDF for {name}")
             except Exception as e:
                 print(f"Error generating PDF for {name}: {e}")
-            # if os.path.exists(latex_filename):
-            #     os.remove(latex_filename)
+            # Keep LaTeX files in tex directory for reference
         return generated_pdfs
 
 
@@ -248,7 +254,7 @@ def main():
         "Fundamentals of Neuroscience and Artificial Intelligence (AI)",
         "Neuroscience concepts for AI and Neuro-AI",
         "Basic AI methods and algorithms",
-        "Machine Learning, and Deep Neural Networks",
+        "Machine Learning and Deep Neural Networks",
         "Deep Learning in Neuroscience",
         "Ethical considerations and biases in AI",
         "Clinical Applications of Neuro-AI"
@@ -283,7 +289,7 @@ def main():
         print("Generating combined certificate file...")
         output_file = generator.generate_certificates_from_csv(
             csv_file,
-            output_file="certificates.tex",
+            output_file="output/tex/certificates.tex",
             workshop_title=workshop_title,
             tutors=tutors,
             duration=duration,
@@ -299,22 +305,27 @@ def main():
         print("Compiling combined PDF...")
         try:
             import subprocess
+            # Change to the tex directory for compilation
+            tex_dir = "output/tex"
+            os.makedirs(tex_dir, exist_ok=True)
             result = subprocess.run(
                 ["xelatex", "-interaction=nonstopmode", "certificates.tex"],
                 capture_output=True,
-                text=True
+                text=True,
+                cwd=tex_dir
             )
             if result.returncode == 0:
                 print("PDF compilation successful!")
                 # Move PDF to pdfs folder
-                if os.path.exists("certificates.pdf"):
+                pdf_source = os.path.join(tex_dir, "certificates.pdf")
+                if os.path.exists(pdf_source):
                     import shutil
-                    pdf_destination = os.path.join("pdfs", "all_certificates.pdf")
-                    shutil.move("certificates.pdf", pdf_destination)
+                    pdf_destination = os.path.join("output/pdfs", "all_certificates.pdf")
+                    shutil.move(pdf_source, pdf_destination)
                     print(f"Combined PDF saved to: {pdf_destination}")
                     # Clean up auxiliary files
                     for ext in ['.aux', '.log', '.out']:
-                        aux_file = f"certificates{ext}"
+                        aux_file = os.path.join(tex_dir, f"certificates{ext}")
                         if os.path.exists(aux_file):
                             os.remove(aux_file)
                     print("Auxiliary files cleaned up.")
@@ -332,11 +343,9 @@ def main():
         print(f"CSV file '{csv_file}' not found. Please create it with 'Lastname', 'Name', and 'completion_date' columns.")
         # Fallback to example list
         names = [
-            "Mario Eduardo Archila Meléndez",
-            "John Doe",
-            "Jane Smith",
-            "Alice Johnson",
-            "Bob Wilson"
+            "Lincoln,Abraham",
+            "King,Martin Luther",
+            "Mandela,Nelson"
         ]
         print("Generating certificates from example list...")
         output_file = generator.generate_certificates_from_list(names)

@@ -1,19 +1,19 @@
-% Certificate Template Example for BPCN (with placeholders)
-\documentclass[12pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{geometry}
-\usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{fontspec}
-\usepackage{array}
-\usepackage{tabularx}
-\usepackage{eso-pic} % Use eso-pic for background image
-\usepackage{tikz}
-\usepackage{setspace}
+% Certificate Template Example (with placeholders)
+\documentclass[12pt,a4paper]{article} % 12pt font size, a4 paper size
+\usepackage[utf8]{inputenc} % UTF-8 encoding for special characters (e.g. umlauts)
+\usepackage[T1]{fontenc} % T1 font encoding for special characters (e.g. umlauts)
+\usepackage{geometry} % Package for setting page dimensions
+\usepackage{graphicx} % Package for including images (e.g. background image)
+\usepackage{xcolor} % Package for defining colors (e.g. for text colors)
+\usepackage{fontspec} % Package for setting fonts (e.g. Arial)
+\usepackage{array} % Package for defining arrays (e.g. for tables)
+\usepackage{tabularx} % Package for defining tables (e.g. for tables)
+\usepackage{eso-pic} % Use eso-pic for background image (e.g. for background image)
+\usepackage{tikz} % Package for drawing graphics (e.g. for drawing lines)
+\usepackage{setspace} % Package for setting line spacing (e.g. for line spacing)
 
 % Page setup
-\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=0.5cm}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=0.5cm} % Set page dimensions
 \pagestyle{empty}
 
 % Colors
@@ -29,7 +29,7 @@
   \AddToShipoutPictureBG{
     \put(-0.1cm,0){\includegraphics[width=\paperwidth,height=\paperheight]{certificate_base_page.png}}
   }
-}{
+}{ % Else
   % No background image - blank page
 }
 
@@ -39,8 +39,8 @@
 \hspace*{2.8cm}
 \begin{minipage}{13.2cm}
 
-    {\bfseries\fontsize{16}{20}\selectfont {FRIEDRICH-SCHILLER-UNIVERSITY JENA}}\\[0.2cm]
-    {\fontsize{14}{14}\selectfont Department of Biological Psychology and \\Cognitive Neuroscience (BPCN)}\\[4cm]
+    {\bfseries\fontsize{16}{20}\selectfont {UNIVERSITY NAME}}\\[0.2cm]
+    {\fontsize{14}{14}\selectfont Department of Agentic AI and Psychology (AIP)}\\[4cm]
     
 
     {\hspace{0cm}\color{lightblue}\bfseries\fontsize{23}{20}\selectfont {CERTIFICATE OF PARTICIPATION}}\\[1.8cm]
@@ -72,7 +72,7 @@
     % Signatories
     \begin{tabularx}{14.6cm}{@{}>{\centering\arraybackslash}X >{\centering\arraybackslash}X@{}}
         \hspace{-4.7cm}\textbf{{{SIGNATORY1}}} & \hspace{0.5cm} \textbf{{{SIGNATORY2}}} \\[0cm]
-        \hspace{-4.7cm}\textit{Course instructor} & \hspace{0.5cm} \textit{Chair of BPCN} \\
+        \hspace{-4.7cm}\textit{Course instructor} & \hspace{0.5cm} \textit{Chair of Department} \\
         \parbox{12.4cm}{\centering\color{grayText}\fontsize{10}{12}\selectfont (This document is digitally signed.)}
     \end{tabularx}
     \vspace{0.7cm}

@@ -18,6 +18,9 @@ certificate_base_page.ai
 *.pdf
 pdfs/
 
+# Exclude output directory with generated files
+output/
+
 # Exclude LaTeX files with participant information
 certificate_*.tex
 certificates.tex

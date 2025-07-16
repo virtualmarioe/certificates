@@ -39,8 +39,9 @@ python3 setup.py
 1. **Prepare your data**: Create a CSV file named `names.csv` with the following columns:
    ```
    Lastname,Name,completion_date
-   Doe,John,2025-01-15
-   Smith,Jane,2025-01-20
+   Lincoln,Abraham,1809-02-12
+   King,Martin Luther,1929-01-15
+   Mandela,Nelson,1918-07-18
    ```
 
 2. **Add your branding assets**:
@@ -63,14 +64,15 @@ python3 generate_certificates.py
 This will:
 - Generate individual PDF certificates for each person in `names.csv`
 - Create a combined PDF with all certificates
-- Save all files to the `pdfs/` directory
+- Save PDFs to the `output/pdfs/` directory
+- Save LaTeX source files to the `output/tex/` directory
 
 ### Customization
 
 You can modify the certificate content by editing the variables in `generate_certificates.py`:
 
 ```python
-workshop_title = "Your Workshop Title"
+workshop_title = "Your Workshop/course Title"
 tutors = "Instructor Name"
 duration = "Duration"
 contents = [
@@ -94,7 +96,11 @@ certificates/
 ├── sample_names.csv             # Example CSV file
 ├── names.csv                    # Your participant data (not in repo)
 ├── certificate_base_page.png    # Background image (not in repo)
-├── pdfs/                        # Generated PDFs (not in repo)
+├── output/                      # Generated files (not in repo)
+│   ├── pdfs/                    # Individual and combined PDFs
+│   └── tex/                     # LaTeX source files
+├── LICENSE.md                   # MIT License
+├── CONTRIBUTING.md              # Contribution rules
 └── README.md                    # This file
 ```
 
@@ -138,8 +144,8 @@ For testing, you can uncomment the debug section in `generate_certificates.py` t
 
 ## License
 
-[Add your license information here]
+MIT License
 
 ## Contributing
 
-[Add contribution guidelines if desired] 
+See CONTRIBUTING.md file
