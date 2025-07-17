@@ -70,9 +70,9 @@ class CertificateGenerator:
 \setmainfont{Arial}
 
 % Set background image using eso-pic (only if file exists)
-\IfFileExists{certificate_base_page.png}{
+\IfFileExists{../../certificate_base_page.png}{
   \AddToShipoutPictureBG{
-    \put(-0.1cm,0){\includegraphics[width=\paperwidth,height=\paperheight]{certificate_base_page.png}}
+    \put(-0.1cm,0){\includegraphics[width=\paperwidth,height=\paperheight]{../../certificate_base_page.png}}
   }
 }{
   % No background image - blank page
@@ -220,7 +220,7 @@ class CertificateGenerator:
                 f.write(latex_content)
             try:
                 result = subprocess.run(
-                    ["xelatex", "-interaction=nonstopmode", latex_filename],
+                    ["xelatex", "-interaction=nonstopmode", f"certificate_{safe_name}.tex"],
                     capture_output=True,
                     text=True,
                     cwd=tex_dir
@@ -273,7 +273,7 @@ def main():
         print("Generating individual certificates...")
         individual_pdfs = generator.generate_individual_certificates_from_csv(
             csv_file,
-            output_dir="pdfs",
+            output_dir="output/pdfs",
             workshop_title=workshop_title,
             tutors=tutors,
             duration=duration,

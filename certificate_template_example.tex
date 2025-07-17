@@ -25,9 +25,9 @@
 \setmainfont{Arial}
 
 % Set background image using eso-pic (only if file exists)
-\IfFileExists{certificate_base_page.png}{
+\IfFileExists{../../certificate_base_page.png}{
   \AddToShipoutPictureBG{
-    \put(-0.1cm,0){\includegraphics[width=\paperwidth,height=\paperheight]{certificate_base_page.png}}
+    \put(-0.1cm,0){\includegraphics[width=\paperwidth,height=\paperheight]{../../certificate_base_page.png}}
   }
 }{ % Else
   % No background image - blank page
@@ -71,8 +71,8 @@
 
     % Signatories
     \begin{tabularx}{14.6cm}{@{}>{\centering\arraybackslash}X >{\centering\arraybackslash}X@{}}
-        \hspace{-4.7cm}\textbf{{{SIGNATORY1}}} & \hspace{0.5cm} \textbf{{{SIGNATORY2}}} \\[0cm]
-        \hspace{-4.7cm}\textit{Course instructor} & \hspace{0.5cm} \textit{Chair of Department} \\
+        \hspace{-5.4cm}\textbf{{{SIGNATORY1}}} & \hspace{0cm} \textbf{{{SIGNATORY2}}} \\[0cm]
+        \hspace{-5.4cm}\textit{Course instructor} & \hspace{0cm} \textit{Chair of Department} \\
         \parbox{12.4cm}{\centering\color{grayText}\fontsize{10}{12}\selectfont (This document is digitally signed.)}
     \end{tabularx}
     \vspace{0.7cm}
