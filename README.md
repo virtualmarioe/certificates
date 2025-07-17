@@ -144,8 +144,8 @@ For testing, you can uncomment the debug section in `generate_certificates.py` t
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Contributing
 
-See CONTRIBUTING.md file
+We welcome contributions! Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to this project.
