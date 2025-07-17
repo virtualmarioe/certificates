@@ -20,7 +20,7 @@ A Python-based LaTeX certificate generation system for creating professional cer
 
 1. Clone this repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/virtualmarioe/certificates.git
 cd certificates
 ```
 

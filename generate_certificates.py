@@ -181,10 +181,10 @@ class CertificateGenerator:
                     completion_dates.append(datetime.date.today().strftime("%Y-%m-%d"))
         if contents is None:
             contents = [
-                "Overview of local HPC resources",
-                "Structure of HPC systems",
-                "Usage of a HPC system for numerical intensive applications",
-                "Interactive use"
+                "Very interesting content 1",
+                "Very interesting content 2",
+                "Very interesting content 3",
+                "Very interesting content 4"
             ]
         if date is None:
             date = datetime.date.today().strftime("%Y-%m-%d")
